@@ -114,6 +114,7 @@ public class GameWorld extends GameEngine {
                 getSceneNodes().getChildren().add(0, missile.getNode());
 
             } else if (event.getButton() == MouseButton.SECONDARY) {
+                System.out.println("Right click...");
                 // determine when all atoms are not on the game surface. Ship should be one sprite left.
 
                 // stop ship from moving forward
@@ -122,6 +123,25 @@ public class GameWorld extends GameEngine {
                 spaceShip.plotCourse(event.getX(), event.getY(), true);
             }
         };
+        
+        //Movement based on WASD keys
+        EventHandler moveWASD = (EventHandler<KeyEvent>) (KeyEvent event) -> {
+            if (event.getCode() == KeyCode.W) {
+                spaceShip.plotCourse(0, 1, true);
+            }
+            else if (event.getCode() == KeyCode.A) {
+                spaceShip.plotCourse(-1, 0, true);
+            }
+            else if (event.getCode() == KeyCode.S) {
+                spaceShip.plotCourse(0, -1, true);
+            }
+            else if (event.getCode() == KeyCode.D) {
+                spaceShip.plotCourse(1, 0, true);
+            }
+        };
+        
+        //Initialize keyboard input
+        primaryStage.getScene().setOnKeyReleased(moveWASD);
 
         // Initialize input
         primaryStage.getScene().setOnMousePressed(fireOrMove);
