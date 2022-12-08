@@ -20,6 +20,8 @@ import javafx.stage.Stage;
 import java.util.Random;
 import javafx.scene.image.ImageView;
 
+//
+
 /**
  * This is a simple game world simulating a bunch of spheres looking like atomic
  * particles colliding with each other. When the game loop begins the user will
@@ -100,13 +102,15 @@ public class GameWorld extends GameEngine {
         EventHandler fireOrMove = (EventHandler<MouseEvent>) (MouseEvent event) -> {
             mousePressPtLabel.setText("Mouse Press PT = (" + event.getX() + ", " + event.getY() + ")");
             if (event.getButton() == MouseButton.PRIMARY) {
-
+                
                 // Aim
                 spaceShip.plotCourse(event.getX(), event.getY(), false);
 
                 // fire
                 Missile missile = spaceShip.fire();
                 getSpriteManager().addSprites(missile);
+                
+                
 
                 // play sound
                 getSoundManager().playSound("laser");
@@ -114,7 +118,6 @@ public class GameWorld extends GameEngine {
                 getSceneNodes().getChildren().add(0, missile.getNode());
 
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                System.out.println("Right click...");
                 // determine when all atoms are not on the game surface. Ship should be one sprite left.
 
                 // stop ship from moving forward
@@ -126,17 +129,17 @@ public class GameWorld extends GameEngine {
         
         //Movement based on WASD keys
         EventHandler moveWASD = (EventHandler<KeyEvent>) (KeyEvent event) -> {
-            if (event.getCode() == KeyCode.W) {
-                spaceShip.plotCourse(0, 1, true);
+            if (event.getCode() == KeyCode.W) {;
+                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() - 1, true);
             }
             else if (event.getCode() == KeyCode.A) {
-                spaceShip.plotCourse(-1, 0, true);
+                spaceShip.plotCourse(spaceShip.getCenterX() - 1, spaceShip.getCenterY(), true);
             }
             else if (event.getCode() == KeyCode.S) {
-                spaceShip.plotCourse(0, -1, true);
+                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() + 1, true);
             }
             else if (event.getCode() == KeyCode.D) {
-                spaceShip.plotCourse(1, 0, true);
+                spaceShip.plotCourse(spaceShip.getCenterX() + 1, spaceShip.getCenterY(), true);
             }
         };
         
@@ -291,18 +294,19 @@ public class GameWorld extends GameEngine {
      */
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        if (spriteA != spriteB) {
-            
-            if (spriteA.collide(spriteB)) {
-
-                if (spriteA != spaceShip) {
-                    spriteA.handleDeath(this);
-                }
-                if (spriteB != spaceShip) {
-                    spriteB.handleDeath(this);
-                }
-            }
-        }
+    //TODO: handle Collisions without ruining firing
+//        if (spriteA != spriteB) {
+//            
+//            if (spriteA.collide(spriteB)) {
+//
+//                if (spriteA != spaceShip) {
+//                    spriteA.handleDeath(this);
+//                }
+//                if (spriteB != spaceShip) {
+//                    spriteB.handleDeath(this);
+//                }
+//            }
+//        }
         return false;
     }
 }

@@ -12,4 +12,8 @@ public class Missile extends Atom {
         super(imagePath);
     }
     
+    
+    
+    
+    
 }
