@@ -1,5 +1,6 @@
 package edu.vanier.ufo.engine;
 
+import edu.vanier.ufo.game.Missile;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

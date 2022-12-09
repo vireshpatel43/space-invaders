@@ -294,19 +294,18 @@ public class GameWorld extends GameEngine {
      */
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-    //TODO: handle Collisions without ruining firing
-//        if (spriteA != spriteB) {
-//            
-//            if (spriteA.collide(spriteB)) {
-//
-//                if (spriteA != spaceShip) {
-//                    spriteA.handleDeath(this);
-//                }
-//                if (spriteB != spaceShip) {
-//                    spriteB.handleDeath(this);
-//                }
-//            }
-//        }
+        // use this logic but for missile (instance of Sprite)
+        if (spriteA != spriteB) {
+            if (spriteA.collide(spriteB)) {
+
+                if (spriteA != spaceShip) {
+                    spriteA.handleDeath(this);
+                }
+                if (spriteB != spaceShip) {
+                    spriteB.handleDeath(this);
+                }
+            }
+        }
         return false;
     }
 }
