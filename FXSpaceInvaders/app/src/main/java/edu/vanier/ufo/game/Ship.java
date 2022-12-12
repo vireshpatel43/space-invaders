@@ -132,10 +132,18 @@ public class Ship extends Sprite {
      */
     private boolean shieldOn;
 
+    public boolean isShieldOn() {
+        return shieldOn;
+    }
+    
+   
+
     /**
      * Green shield to be used as collision bounds.
      */
     private Circle shield;
+
+    
 
     /**
      * A fade effect while the shields are up momentarily
@@ -150,7 +158,7 @@ public class Ship extends Sprite {
     public Ship() {
         // Load one image.
         Image shipImage;
-        shipImage = new Image(ResourcesManager.SPACE_STAR_SHIP, true);
+        shipImage = new Image(ResourcesManager.SPACE_SHIP_SMALL, true);
         stopArea.setRadius(40);
         stopArea.setStroke(Color.ORANGE);
         RotatedShipImage prev = null;
@@ -447,16 +455,16 @@ public class Ship extends Sprite {
         stopArea.setCenterY(screenY);
     }
 
-    public Missile fire() {
+    public Missile fire(String rocket1, String rocket2) {
         Missile fireMissile;
         float slowDownAmt = 0;
         int scaleBeginningMissle;
         if (KeyCode.DIGIT2 == keyCode) {
-            fireMissile = new Missile(ResourcesManager.ROCKET_FIRE);
+            fireMissile = new Missile(rocket1);
             slowDownAmt = 1.3f;
             scaleBeginningMissle = 11;
         } else {
-            fireMissile = new Missile(ResourcesManager.ROCKET_SMALL);
+            fireMissile = new Missile(rocket2);
             scaleBeginningMissle = 8;
         }
 
@@ -493,7 +501,7 @@ public class Ship extends Sprite {
             shield = new Circle();
             shield.setRadius(60);
             shield.setStrokeWidth(5);
-            shield.setStroke(Color.LIMEGREEN);
+            shield.setStroke(Color.BLUE);
             shield.setCenterX(x);
             shield.setCenterY(y);
             shield.setOpacity(.70);

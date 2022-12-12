@@ -55,6 +55,10 @@ public abstract class GameEngine {
     private final SpriteManager spriteManager;
 
     private final SoundManager soundManager;
+    
+    public boolean levelDone;
+
+    
 
     /**
      * Constructor that is called by the derived class. This will set the frames
@@ -82,7 +86,7 @@ public abstract class GameEngine {
             // update actors
             updateSprites();
             // check for collision.
-             checkCollisions();
+            checkCollisions();
             // removed dead sprites.
             cleanupSprites();
         };
@@ -93,6 +97,8 @@ public abstract class GameEngine {
         setGameLoop(gameLoop);
     }
 
+    
+    
     /**
      * Initialize the game world by update the JavaFX Stage.
      *

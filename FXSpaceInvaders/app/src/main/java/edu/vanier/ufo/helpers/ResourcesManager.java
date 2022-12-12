@@ -18,13 +18,16 @@ public class ResourcesManager {
     private static final String IMAGES_FOLDER = RESOURCES_FOLDER + "images/";
     private static final String SOUNDS_FOLDER = RESOURCES_FOLDER + "sounds/";
     // Ship images.
-    public static final String SPACE_SHIP = IMAGES_FOLDER + "spiked ship.png";
-    public static final String SPACE_STAR_SHIP = IMAGES_FOLDER + "starship.png";
-    public static final String SPACE_TANK = IMAGES_FOLDER + "tank.png";
+    public static final String SPACE_SHIP_SMALL = IMAGES_FOLDER + "ship_C.png";
+    public static final String SPACE_SHIP_MEDIUM = IMAGES_FOLDER + "ship_E.png";
+    public static final String SPACE_SHIP_LARGE = IMAGES_FOLDER + "ship_sidesC.png";
     // Rocket images
-    public static final String ROCKET_SMALL = IMAGES_FOLDER + "rocket.png";
-    public static final String ROCKET_FIRE = IMAGES_FOLDER + "missile.png";
-
+    public static final String ROCKET_SMALL = IMAGES_FOLDER + "star_small.png";
+    public static final String ROCKET_MEDIUM = IMAGES_FOLDER + "star_tiny.png";
+    public static final String ROCKET_LARGE = IMAGES_FOLDER + "ship_B.png";
+    public static final String ROCKET_SMALL2 = IMAGES_FOLDER + "tank_explosion6.png";
+    public static final String ROCKET_MEDIUM2 = IMAGES_FOLDER + "tank_explosion2.png";
+    public static final String ROCKET_LARGE2 = IMAGES_FOLDER + "tank_explosion7.png";
     // Invader sprites.
     public static final String INVADER_LARGE_SHIP = IMAGES_FOLDER + "large_invader_b.png";
     public static final String INVADER_SMALL_SHIP = IMAGES_FOLDER + "small_invader_b.png";
@@ -34,15 +37,16 @@ public class ResourcesManager {
     public static final String INVADER_SCI_FI = IMAGES_FOLDER + "sci-fi.png";
 
     // Sound effect files
-    public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
-    //public static final String SOUND_LASER = SOUNDS_FOLDER + "alienMove2.wav";    
+    //public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
+    public static final String SOUND_LASER = SOUNDS_FOLDER + "alienMove2.wav";    
     
+    // Explosion effect
+    public static final String EXPLOSION_EFFECT = IMAGES_FOLDER + "explosion.gif";
     
-    public static final String[] INADER_SPRITES_PATH = {			
-			INVADER_UFO, INVADER_CHICKEN, INVADER_BEE,INVADER_SCI_FI
-	};
+    public static final String[] INADER_SPRITES_PATH = {
+        INVADER_UFO, INVADER_CHICKEN, INVADER_BEE, INVADER_SCI_FI
+    };
 
-//    public static final String ROCKET_SMALL = IMAGES_FOLDER + "rocket.png";
     public static HashMap<Integer, String> getInvaderSprites() {
         HashMap<Integer, String> invaders = new HashMap<Integer, String>();
         invaders.put(1, ResourcesManager.IMAGES_FOLDER + "large_invader_b.png");

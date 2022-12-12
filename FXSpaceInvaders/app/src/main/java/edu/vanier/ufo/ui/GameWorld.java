@@ -8,6 +8,8 @@ import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -32,12 +34,32 @@ import javafx.scene.image.ImageView;
  * @author cdea
  */
 public class GameWorld extends GameEngine {
-
+    
+    
+    Label score = new Label();
+    
+    Label lives = new Label();
+    
+    Label level = new Label();
+    
+    Label eventLabel = new Label();
+    
+    Label subEventLabel = new Label();
     // mouse pt label
     Label mousePtLabel = new Label();
     // mouse press pt label
     Label mousePressPtLabel = new Label();
+    
     Ship spaceShip = new Ship();
+    
+    int levelCounter;
+    
+    int currentScore = 0;
+    
+    int hitCounter = 0;
+    
+    boolean shieldHit = false;
+    
 
     public GameWorld(int fps, String title) {
         super(fps, title);
@@ -67,13 +89,29 @@ public class GameWorld extends GameEngine {
         setupInput(primaryStage);
 
         // Create many spheres
-        generateManySpheres(5);
+//        generateManySpheres(5);
+
+
 
         getSpriteManager().addSprites(spaceShip);
         getSceneNodes().getChildren().add(0, spaceShip.getNode());
+        
+        // Game over text
+        VBox gameEvent = new VBox();
+        subEventLabel.setTextFill(Color.WHITE);
+        subEventLabel.setFont(new Font("Impact", 20));
+        subEventLabel.setTextAlignment(TextAlignment.CENTER);
+        eventLabel.setTextFill(Color.WHITE);
+        eventLabel.setFont(new Font("Impact", 40));
+        eventLabel.setTextAlignment(TextAlignment.CENTER);
+        gameEvent.getChildren().add(eventLabel);
+        gameEvent.getChildren().add(subEventLabel);
+        gameEvent.setTranslateX((getGameSurface().getWidth() / 2) - 100);
+        gameEvent.setTranslateY(getGameSurface().getHeight() / 2);
+        
+        
         // mouse point
         VBox stats = new VBox();
-
         HBox row1 = new HBox();
         mousePtLabel.setTextFill(Color.WHITE);
         row1.getChildren().add(mousePtLabel);
@@ -83,14 +121,34 @@ public class GameWorld extends GameEngine {
         stats.getChildren().add(row1);
         stats.getChildren().add(row2);
         
+        VBox HUD = new VBox();
+        HUD.setTranslateX(180);
+        lives.setTextFill(Color.WHITE);
+        lives.setFont(new Font("Impact", 20));
+        lives.setText("Lives: ");
+        level.setTextFill(Color.WHITE);
+        level.setFont(new Font("Impact", 20));
+        level.setText("Level: ");
+        score.setTextFill(Color.WHITE);
+        score.setFont(new Font("Impact", 20));
+        score.setText("Score: ");
+        
+        
+        
+        HUD.getChildren().addAll(lives, level, score);
+        
+        
         //TODO: Add the HUD here.
         getSceneNodes().getChildren().add(0, stats);
-
-
+        getSceneNodes().getChildren().add(gameEvent);
+        getSceneNodes().getChildren().add(HUD);
+        
         // load sound files
         getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
     }
-
+    
+    
+    
     /**
      * Sets up the mouse input.
      *
@@ -106,58 +164,107 @@ public class GameWorld extends GameEngine {
                 // Aim
                 spaceShip.plotCourse(event.getX(), event.getY(), false);
 
+                
                 // fire
-                Missile missile = spaceShip.fire();
-                getSpriteManager().addSprites(missile);
-                
-                
+                if (levelCounter == 1) {
+                    Missile missile = spaceShip.fire(ResourcesManager.ROCKET_SMALL2, ResourcesManager.ROCKET_SMALL);
+                    getSpriteManager().addSprites(missile);
+                    // play sound
+                    getSoundManager().playSound("laser");
 
-                // play sound
-                getSoundManager().playSound("laser");
+                    getSceneNodes().getChildren().add(0, missile.getNode());
+                }
+                if (levelCounter == 2) {
+                    Missile missile = spaceShip.fire(ResourcesManager.ROCKET_MEDIUM2, ResourcesManager.ROCKET_MEDIUM);
+                    getSpriteManager().addSprites(missile);
 
-                getSceneNodes().getChildren().add(0, missile.getNode());
+                    // play sound
+                    getSoundManager().playSound("laser");
 
-            } else if (event.getButton() == MouseButton.SECONDARY) {
-                // determine when all atoms are not on the game surface. Ship should be one sprite left.
+                    getSceneNodes().getChildren().add(0, missile.getNode());
+                }
+                if (levelCounter == 3) {
+                    Missile missile = spaceShip.fire(ResourcesManager.ROCKET_LARGE2, ResourcesManager.ROCKET_LARGE);
+                    getSpriteManager().addSprites(missile);
 
-                // stop ship from moving forward
-                spaceShip.applyTheBrakes(event.getX(), event.getY());
-                // move forward and rotate ship
-                spaceShip.plotCourse(event.getX(), event.getY(), true);
-            }
+                    // play sound
+                    getSoundManager().playSound("laser");
+
+                    getSceneNodes().getChildren().add(0, missile.getNode());
+                }
+//                
+
+            } 
+//            else if (event.getButton() == MouseButton.SECONDARY) {
+//                // determine when all atoms are not on the game surface. Ship should be one sprite left.
+//
+//                // stop ship from moving forward
+//                spaceShip.applyTheBrakes(event.getX(), event.getY());
+//                // move forward and rotate ship
+//                spaceShip.plotCourse(event.getX(), event.getY(), true);
+//            }
         };
-        
-        //Movement based on WASD keys
-        EventHandler moveWASD = (EventHandler<KeyEvent>) (KeyEvent event) -> {
-            if (event.getCode() == KeyCode.W) {;
-                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() - 1, true);
-            }
-            else if (event.getCode() == KeyCode.A) {
-                spaceShip.plotCourse(spaceShip.getCenterX() - 1, spaceShip.getCenterY(), true);
-            }
-            else if (event.getCode() == KeyCode.S) {
-                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() + 1, true);
-            }
-            else if (event.getCode() == KeyCode.D) {
-                spaceShip.plotCourse(spaceShip.getCenterX() + 1, spaceShip.getCenterY(), true);
-            }
-        };
-        
-        //Initialize keyboard input
-        primaryStage.getScene().setOnKeyReleased(moveWASD);
 
+ 
         // Initialize input
         primaryStage.getScene().setOnMousePressed(fireOrMove);
-
         // set up stats
-        EventHandler changeWeapons = (EventHandler<KeyEvent>) (KeyEvent event) -> {
-            if (KeyCode.SPACE == event.getCode()) {
-                spaceShip.shieldToggle();
-                return;
+        EventHandler keyEvents = (EventHandler<KeyEvent>) (KeyEvent event) -> {
+            if (shieldHit == false && levelCounter != 0) {
+                if (KeyCode.SPACE == event.getCode()) {
+                    spaceShip.shieldToggle();
+                    return;
+                }
             }
             spaceShip.changeWeapon(event.getCode());
+            if (event.getCode() == KeyCode.W) {;
+                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() - 100, true);
+            } else if (event.getCode() == KeyCode.A) {
+                spaceShip.plotCourse(spaceShip.getCenterX() - 100, spaceShip.getCenterY(), true);
+            } else if (event.getCode() == KeyCode.S) {
+                spaceShip.plotCourse(spaceShip.getCenterX(), spaceShip.getCenterY() + 100, true);
+            } else if (event.getCode() == KeyCode.D) {
+                spaceShip.plotCourse(spaceShip.getCenterX() + 100, spaceShip.getCenterY(), true);
+            }
+            if (event.getCode() == KeyCode.ENTER) {
+                if (getSpriteManager().getAllSprites().size() == 1) {
+                    levelCounter++;
+                    if (levelCounter == 1 && hitCounter < 3) {
+                        hitCounter = 0;
+                        spaceShip.changeShip(ResourcesManager.SPACE_SHIP_SMALL);
+                        generateManySpheres(10);
+                        eventLabel.setText(" ");
+                        subEventLabel.setText(" ");
+                        lives.setText("Lives: " + Integer.toString(3 - hitCounter));
+                        level.setText("Level: 1");
+                        shieldHit = false;
+                    }
+                    else if (levelCounter == 2 && hitCounter < 3) {
+                        hitCounter = 0;
+                        spaceShip.changeShip(ResourcesManager.SPACE_SHIP_MEDIUM);
+                        generateManySpheres(6);
+                        eventLabel.setText(" ");
+                        subEventLabel.setText(" ");
+                        lives.setText("Lives: " + Integer.toString(3 - hitCounter));
+                        level.setText("Level: 2");
+                        shieldHit = false;
+                    } 
+                    else if (levelCounter == 3 && hitCounter < 3) {
+                        hitCounter = 0;
+                        spaceShip.changeShip(ResourcesManager.SPACE_SHIP_LARGE);
+                        generateManySpheres(2);
+                        eventLabel.setText(" ");
+                        subEventLabel.setText(" ");
+                        lives.setText("Lives: " + Integer.toString(3 - hitCounter));
+                        level.setText("Level: 3");
+                        shieldHit = false;
+                    }
+
+                }
+            }
+            
         };
-        primaryStage.getScene().setOnKeyPressed(changeWeapons);
+        primaryStage.getScene().setOnKeyPressed(keyEvents);
 
         // set up stats
         EventHandler showMouseMove = (EventHandler<MouseEvent>) (MouseEvent event) -> {
@@ -203,12 +310,16 @@ public class GameWorld extends GameEngine {
             atomImage.setCache(true);
             atomImage.setCacheHint(CacheHint.SPEED);
             atomImage.setManaged(false);
+            
+            //Use this method to change the velocity of invaders
+//            atom.setVelocity(newX, newY);
 
             // add to actors in play (sprite objects)
             getSpriteManager().addSprites(atom);
 
             // add sprite's 
             getSceneNodes().getChildren().add(atom.getNode());
+            
         }
     }
 
@@ -238,7 +349,7 @@ public class GameWorld extends GameEngine {
         // bounce off the walls when outside of boundaries
 
         Node displayNode;
-        if (sprite instanceof Ship) {
+        if ((sprite instanceof Ship)) {
             displayNode = sprite.getNode();//((Ship)sprite).getCurrentShipImage();
         } else {
             displayNode = sprite.getNode();
@@ -246,13 +357,18 @@ public class GameWorld extends GameEngine {
         // Get the group node's X and Y but use the ImageView to obtain the width.
         if (sprite.getNode().getTranslateX() > (getGameSurface().getWidth() - displayNode.getBoundsInParent().getWidth())
                 || displayNode.getTranslateX() < 0) {
-
             // bounce the opposite direction
+            if (sprite instanceof Ship) {
+                sprite.setVelocityX(0);
+            }
             sprite.setVelocityX(sprite.getVelocityX() * -1);
         }
         // Get the group node's X and Y but use the ImageView to obtain the height.
         if (sprite.getNode().getTranslateY() > getGameSurface().getHeight() - displayNode.getBoundsInParent().getHeight()
                 || sprite.getNode().getTranslateY() < 0) {
+            if (sprite instanceof Ship) {
+                sprite.setVelocityY(0);
+            }
             sprite.setVelocityY(sprite.getVelocityY() * -1);
         }
     }
@@ -292,19 +408,52 @@ public class GameWorld extends GameEngine {
      * @return boolean returns a true if the two sprites have collided otherwise
      * false.
      */
+
+    // Shield should only be used once per level
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
-        // use this logic but for missile (instance of Sprite)
+        //Ensure sprites are not equal
         if (spriteA != spriteB) {
             if (spriteA.collide(spriteB)) {
-
-                if (spriteA != spaceShip) {
+                if (spriteA == spaceShip || spriteB == spaceShip && !(spriteA instanceof Missile) && !(spriteB instanceof Missile) && spaceShip.isShieldOn()) {
+                    shieldHit = true;
+                    spaceShip.shieldToggle();
+                }
+                else if (spriteA == spaceShip || spriteB == spaceShip && !(spriteA instanceof Missile) && !(spriteB instanceof Missile) && !(spaceShip.isShieldOn())) {
+                        hitCounter++;
+                        lives.setText("Lives: " + Integer.toString(3 - hitCounter));
+                        if (hitCounter >= 3) {
+                            System.out.println("DEAD");
+                            spaceShip.handleDeath(this);
+                            eventLabel.setText("GAME OVER");
+                            subEventLabel.setText("Press 'enter' to continue");
+                            currentScore = 0;
+                            hitCounter = 0;
+                            levelCounter = 1;
+                        }
+                    }
+                
+                //Ensures that two invaders cannot destroy eachother
+                if (spriteA != spaceShip && !(spriteA instanceof Missile) && spriteB != spaceShip && !(spriteB instanceof Missile)) {
+                    return false;
+                }
+                //A missile or ship cannot be destroyed in the event of a collision
+                if (spriteA != spaceShip && !(spriteA instanceof Missile)) {
                     spriteA.handleDeath(this);
                 }
-                if (spriteB != spaceShip) {
+                if (spriteB != spaceShip && !(spriteB instanceof Missile)) {
                     spriteB.handleDeath(this);
                 }
             }
+        }
+        
+        if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter == 0) {
+            eventLabel.setText("SPACE INVADERS");
+            subEventLabel.setText("Press 'enter' to continue");
+        }
+        if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter > 0) {
+            eventLabel.setText("LEVEL " + levelCounter + " COMPLETE");
+            subEventLabel.setText("Press 'enter' to continue");
         }
         return false;
     }
