@@ -35,6 +35,7 @@ public class ResourcesManager {
     public static final String INVADER_CHICKEN = IMAGES_FOLDER + "rounded-chicken.png";
     public static final String INVADER_BEE = IMAGES_FOLDER + "small-bee.png";
     public static final String INVADER_SCI_FI = IMAGES_FOLDER + "sci-fi.png";
+    
 
     // Sound effect files
     //public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
@@ -49,8 +50,12 @@ public class ResourcesManager {
 
     public static HashMap<Integer, String> getInvaderSprites() {
         HashMap<Integer, String> invaders = new HashMap<Integer, String>();
-        invaders.put(1, ResourcesManager.IMAGES_FOLDER + "large_invader_b.png");
-        invaders.put(2, ResourcesManager.IMAGES_FOLDER + "small_invader_b.png");
+        invaders.put(1, ResourcesManager.IMAGES_FOLDER + "tanks_barrelGreen.png");
+        invaders.put(2, ResourcesManager.IMAGES_FOLDER + "tanks_barrelGrey.png");
+        invaders.put(3, ResourcesManager.IMAGES_FOLDER + "tanks_barrelRed.png");
+        invaders.put(4, ResourcesManager.IMAGES_FOLDER + "meteor_large.png");
+        invaders.put(5, ResourcesManager.IMAGES_FOLDER + "meteor_small.png");
+        invaders.put(6, ResourcesManager.IMAGES_FOLDER + "meteor_squareLarge.png");
         return invaders;
     }
 

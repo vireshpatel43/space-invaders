@@ -3,11 +3,53 @@ package edu.vanier.ufo.ui;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
+import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import java.util.Random;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.TextAlignment;
+import javafx.scene.text.Font;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
@@ -233,18 +275,19 @@ public class GameWorld extends GameEngine {
                     if (levelCounter == 1 || hitCounter == 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_SMALL);
-                        generateManySpheres(10);
+                        generateManySpheres(4);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
                         level.setText("Level: 1");
                         shieldHit = false;
+                        currentScore = 0;
                         
                     }
                     else if (levelCounter == 2 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_MEDIUM);
-                        generateManySpheres(6);
+                        generateManySpheres(8);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -254,13 +297,13 @@ public class GameWorld extends GameEngine {
                     else if (levelCounter == 3 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_LARGE);
-                        generateManySpheres(2);
+                        generateManySpheres(10);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
                         level.setText("Level: 3");
                         shieldHit = false;
-                        levelCounter = 0;
+//                        levelCounter = 0;
                     }
 
                 }
@@ -287,13 +330,23 @@ public class GameWorld extends GameEngine {
         Random rnd = new Random();
         Scene gameSurface = getGameSurface();
         for (int i = 0; i < numSpheres; i++) {
-            Atom atom = new Atom(ResourcesManager.INVADER_SCI_FI);
+            
+            int randNum = ThreadLocalRandom.current().nextInt(1, 6);
+            Atom atom = new Atom(ResourcesManager.getInvaderSprites().get(randNum));
+            
             ImageView atomImage = atom.getImageViewNode();
             // random 0 to 2 + (.0 to 1) * random (1 or -1)
             // Randomize the location of each newly generated atom.
-            atom.setVelocityX((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
-            atom.setVelocityY((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
-
+            if (levelCounter == 1) {
+                atom.setVelocityX((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
+                atom.setVelocityY((rnd.nextInt(2) + rnd.nextDouble()) * (rnd.nextBoolean() ? 1 : -1));
+            }
+            else if (levelCounter == 2) {
+               atom.setVelocity(3, 3);
+            }
+            else if (levelCounter == 3) {
+                atom.setVelocity(4, 4);
+            }
             // random x between 0 to width of scene
             double newX = rnd.nextInt((int) gameSurface.getWidth() - 100);
 
@@ -428,6 +481,12 @@ public class GameWorld extends GameEngine {
                         System.out.println("DEAD");
                         lives.setText("Lives: ");
                         eventLabel.setText("GAME OVER");
+                        //TODO: on death, objects should clear
+                        List removeList = (List) getSpriteManager().getAllSprites().stream().filter(Sprite -> (Sprite != spaceShip));
+//                        for (int i = 0; i < removeList.size(); i++) {
+//                            System.out.println(removeList.get(i));
+//                        }
+                        getSpriteManager().getAllSprites().removeIf(Sprite -> (Sprite != spaceShip));
                         subEventLabel.setText("Press 'enter' to continue");
                         currentScore = 0;
                         hitCounter = 3;
@@ -442,9 +501,12 @@ public class GameWorld extends GameEngine {
                 //A missile or ship cannot be destroyed in the event of a collision
                 if (spriteA != spaceShip && !(spriteA instanceof Missile)) {
                     spriteA.handleDeath(this);
+                    currentScore++;
+                    score.setText("Score: " + currentScore);
                 }
                 if (spriteB != spaceShip && !(spriteB instanceof Missile)) {
                     spriteB.handleDeath(this);
+                    score.setText("Score: " + currentScore);
                 }
             }
         }
@@ -458,8 +520,7 @@ public class GameWorld extends GameEngine {
             subEventLabel.setText("Press 'enter' to continue");
         }
         if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter == 3) {
-            eventLabel.setText("GAME COMPLETE");
-            subEventLabel.setText("Press 'enter' to try again");
+            levelCounter = 0;
         }
         return false;
     }
