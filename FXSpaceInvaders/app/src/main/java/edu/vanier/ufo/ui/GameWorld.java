@@ -3,53 +3,12 @@ package edu.vanier.ufo.ui;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
-import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.Font;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import javafx.scene.image.ImageView;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.Font;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import java.util.Random;
-import javafx.scene.image.ImageView;
-import javafx.scene.text.TextAlignment;
-import javafx.scene.text.Font;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import javafx.scene.image.ImageView;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.Font;
 import javafx.scene.control.Label;
@@ -94,6 +53,7 @@ public class GameWorld extends GameEngine {
     
     Ship spaceShip = new Ship();
     
+    
     int levelCounter;
     
     int currentScore = 0;
@@ -120,7 +80,7 @@ public class GameWorld extends GameEngine {
 
         // Create the scene
         setSceneNodes(new Group());
-        setGameSurface(new Scene(getSceneNodes(), 1000, 600));
+        setGameSurface(new Scene(getSceneNodes(), 1200, 800));
 
         // Change the background of the main scene.
         getGameSurface().setFill(Color.BLACK);
@@ -129,10 +89,8 @@ public class GameWorld extends GameEngine {
 
         // Setup Game input
         setupInput(primaryStage);
-
-        // Create many spheres
-//        generateManySpheres(5);
-
+        
+        
 
 
         getSpriteManager().addSprites(spaceShip);
@@ -152,28 +110,19 @@ public class GameWorld extends GameEngine {
         gameEvent.setTranslateY(getGameSurface().getHeight() / 2);
         
         
-        // mouse point
-        VBox stats = new VBox();
-        HBox row1 = new HBox();
-        mousePtLabel.setTextFill(Color.WHITE);
-        row1.getChildren().add(mousePtLabel);
-        HBox row2 = new HBox();
-        mousePressPtLabel.setTextFill(Color.WHITE);
-        row2.getChildren().add(mousePressPtLabel);
-        stats.getChildren().add(row1);
-        stats.getChildren().add(row2);
-        
-        VBox HUD = new VBox();
-        HUD.setTranslateX(180);
+        HBox HUD = new HBox();
+        HUD.setSpacing(10);
+        HUD.setTranslateY(5);
+        HUD.setTranslateX(5);
         lives.setTextFill(Color.WHITE);
         lives.setFont(new Font("Impact", 20));
-        lives.setText("Lives: ");
+        lives.setText("Lives: 0");
         level.setTextFill(Color.WHITE);
         level.setFont(new Font("Impact", 20));
-        level.setText("Level: ");
+        level.setText("Level: 0");
         score.setTextFill(Color.WHITE);
         score.setFont(new Font("Impact", 20));
-        score.setText("Score: ");
+        score.setText("Score: 0");
         
         
         
@@ -181,7 +130,6 @@ public class GameWorld extends GameEngine {
         
         
         //TODO: Add the HUD here.
-        getSceneNodes().getChildren().add(0, stats);
         getSceneNodes().getChildren().add(gameEvent);
         getSceneNodes().getChildren().add(HUD);
         
@@ -275,7 +223,7 @@ public class GameWorld extends GameEngine {
                     if (levelCounter == 1 || hitCounter == 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_SMALL);
-                        generateManySpheres(4);
+                        generateManySpheres(8);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -287,7 +235,7 @@ public class GameWorld extends GameEngine {
                     else if (levelCounter == 2 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_MEDIUM);
-                        generateManySpheres(8);
+                        generateManySpheres(10);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -297,7 +245,7 @@ public class GameWorld extends GameEngine {
                     else if (levelCounter == 3 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_LARGE);
-                        generateManySpheres(10);
+                        generateManySpheres(12);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -477,16 +425,15 @@ public class GameWorld extends GameEngine {
                 else if (spriteA == spaceShip || spriteB == spaceShip && !(spriteA instanceof Missile) && !(spriteB instanceof Missile) && !(spaceShip.isShieldOn())) {
                     hitCounter++;
                     lives.setText("Lives: " + Integer.toString(3 - hitCounter));
-                    if (hitCounter >= 3) {;
-                        System.out.println("DEAD");
+                    if (hitCounter >= 3) {
                         lives.setText("Lives: ");
                         eventLabel.setText("GAME OVER");
                         //TODO: on death, objects should clear
-                        List removeList = (List) getSpriteManager().getAllSprites().stream().filter(Sprite -> (Sprite != spaceShip));
+//                        List removeList = (List) getSpriteManager().getAllSprites().stream().filter(Sprite -> (Sprite != spaceShip));
 //                        for (int i = 0; i < removeList.size(); i++) {
 //                            System.out.println(removeList.get(i));
 //                        }
-                        getSpriteManager().getAllSprites().removeIf(Sprite -> (Sprite != spaceShip));
+//                        getSpriteManager().getAllSprites().removeIf(Sprite -> (Sprite != spaceShip));
                         subEventLabel.setText("Press 'enter' to continue");
                         currentScore = 0;
                         hitCounter = 3;
