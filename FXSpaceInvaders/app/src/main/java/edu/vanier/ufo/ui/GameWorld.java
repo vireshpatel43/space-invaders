@@ -166,16 +166,15 @@ public class GameWorld extends GameEngine {
 
                 
                 // fire
-                if (levelCounter == 1) {
                     Missile missile = spaceShip.fire(ResourcesManager.ROCKET_SMALL2, ResourcesManager.ROCKET_SMALL);
                     getSpriteManager().addSprites(missile);
                     // play sound
                     getSoundManager().playSound("laser");
 
                     getSceneNodes().getChildren().add(0, missile.getNode());
-                }
+                    
                 if (levelCounter == 2) {
-                    Missile missile = spaceShip.fire(ResourcesManager.ROCKET_MEDIUM2, ResourcesManager.ROCKET_MEDIUM);
+                    missile = spaceShip.fire(ResourcesManager.ROCKET_MEDIUM2, ResourcesManager.ROCKET_MEDIUM);
                     getSpriteManager().addSprites(missile);
 
                     // play sound
@@ -184,7 +183,7 @@ public class GameWorld extends GameEngine {
                     getSceneNodes().getChildren().add(0, missile.getNode());
                 }
                 if (levelCounter == 3) {
-                    Missile missile = spaceShip.fire(ResourcesManager.ROCKET_LARGE2, ResourcesManager.ROCKET_LARGE);
+                    missile = spaceShip.fire(ResourcesManager.ROCKET_LARGE2, ResourcesManager.ROCKET_LARGE);
                     getSpriteManager().addSprites(missile);
 
                     // play sound
@@ -226,10 +225,12 @@ public class GameWorld extends GameEngine {
             } else if (event.getCode() == KeyCode.D) {
                 spaceShip.plotCourse(spaceShip.getCenterX() + 100, spaceShip.getCenterY(), true);
             }
+            
+            
             if (event.getCode() == KeyCode.ENTER) {
-                if (getSpriteManager().getAllSprites().size() == 1) {
+                if (getSpriteManager().getAllSprites().size() == 1 || hitCounter == 3) {
                     levelCounter++;
-                    if (levelCounter == 1 && hitCounter < 3) {
+                    if (levelCounter == 1 || hitCounter == 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_SMALL);
                         generateManySpheres(10);
@@ -238,6 +239,7 @@ public class GameWorld extends GameEngine {
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
                         level.setText("Level: 1");
                         shieldHit = false;
+                        
                     }
                     else if (levelCounter == 2 && hitCounter < 3) {
                         hitCounter = 0;
@@ -258,6 +260,7 @@ public class GameWorld extends GameEngine {
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
                         level.setText("Level: 3");
                         shieldHit = false;
+                        levelCounter = 0;
                     }
 
                 }
@@ -408,30 +411,29 @@ public class GameWorld extends GameEngine {
      * @return boolean returns a true if the two sprites have collided otherwise
      * false.
      */
-
     // Shield should only be used once per level
     @Override
     protected boolean handleCollision(Sprite spriteA, Sprite spriteB) {
         //Ensure sprites are not equal
         if (spriteA != spriteB) {
             if (spriteA.collide(spriteB)) {
-                if (spriteA == spaceShip || spriteB == spaceShip && !(spriteA instanceof Missile) && !(spriteB instanceof Missile) && spaceShip.isShieldOn()) {
+                if ((spriteA == spaceShip || spriteB == spaceShip) && (!(spriteA instanceof Missile) && !(spriteB instanceof Missile) && spaceShip.isShieldOn())) {
                     shieldHit = true;
                     spaceShip.shieldToggle();
                 }
                 else if (spriteA == spaceShip || spriteB == spaceShip && !(spriteA instanceof Missile) && !(spriteB instanceof Missile) && !(spaceShip.isShieldOn())) {
-                        hitCounter++;
-                        lives.setText("Lives: " + Integer.toString(3 - hitCounter));
-                        if (hitCounter >= 3) {
-                            System.out.println("DEAD");
-                            spaceShip.handleDeath(this);
-                            eventLabel.setText("GAME OVER");
-                            subEventLabel.setText("Press 'enter' to continue");
-                            currentScore = 0;
-                            hitCounter = 0;
-                            levelCounter = 1;
-                        }
+                    hitCounter++;
+                    lives.setText("Lives: " + Integer.toString(3 - hitCounter));
+                    if (hitCounter >= 3) {;
+                        System.out.println("DEAD");
+                        lives.setText("Lives: ");
+                        eventLabel.setText("GAME OVER");
+                        subEventLabel.setText("Press 'enter' to continue");
+                        currentScore = 0;
+                        hitCounter = 3;
+                        levelCounter = 0;
                     }
+                }
                 
                 //Ensures that two invaders cannot destroy eachother
                 if (spriteA != spaceShip && !(spriteA instanceof Missile) && spriteB != spaceShip && !(spriteB instanceof Missile)) {
@@ -454,6 +456,10 @@ public class GameWorld extends GameEngine {
         if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter > 0) {
             eventLabel.setText("LEVEL " + levelCounter + " COMPLETE");
             subEventLabel.setText("Press 'enter' to continue");
+        }
+        if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter == 3) {
+            eventLabel.setText("GAME COMPLETE");
+            subEventLabel.setText("Press 'enter' to try again");
         }
         return false;
     }
