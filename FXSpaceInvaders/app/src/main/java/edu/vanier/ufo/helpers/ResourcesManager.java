@@ -39,10 +39,13 @@ public class ResourcesManager {
 
     // Sound effect files
     //public static final String SOUND_LASER = SOUNDS_FOLDER + "laser_2.mp3";    
-    public static final String SOUND_LASER = SOUNDS_FOLDER + "alienMove2.wav";    
+    public static final String SOUND_LASER_LARGE = SOUNDS_FOLDER + "laser2.wav";  
+    public static final String SOUND_LASER_MEDIUM = SOUNDS_FOLDER + "laser_0.wav";  
+    public static final String SOUND_LASER_SMALL = SOUNDS_FOLDER + "laser1.wav";
+    public static final String SOUND_EXPLOSION = SOUNDS_FOLDER + "explosion_1.wav";
     
     // Explosion effect
-    public static final String EXPLOSION_EFFECT = IMAGES_FOLDER + "explosion.gif";
+    public static final String EXPLOSION_EFFECT = IMAGES_FOLDER + "fireworks.gif";
     
     public static final String[] INADER_SPRITES_PATH = {
         INVADER_UFO, INVADER_CHICKEN, INVADER_BEE, INVADER_SCI_FI

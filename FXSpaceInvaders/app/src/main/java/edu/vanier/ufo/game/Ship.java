@@ -188,8 +188,8 @@ public class Ship extends Sprite {
         // set javafx node to an image
         firstShip.setVisible(true);
         setNode(flipBook);
-        flipBook.setTranslateX(350);
-        flipBook.setTranslateY(450);
+        flipBook.setTranslateX(750);
+        flipBook.setTranslateY(780);
         flipBook.setCache(true);
         flipBook.setCacheHint(CacheHint.SPEED);
         flipBook.setManaged(false);

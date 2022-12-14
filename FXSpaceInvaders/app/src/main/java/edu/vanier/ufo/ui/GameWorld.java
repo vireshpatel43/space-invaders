@@ -3,11 +3,13 @@ package edu.vanier.ufo.ui;
 import edu.vanier.ufo.helpers.ResourcesManager;
 import edu.vanier.ufo.engine.*;
 import edu.vanier.ufo.game.*;
+import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;;
+import java.util.stream.Collectors;
 import java.util.concurrent.ThreadLocalRandom;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.Font;
@@ -80,7 +82,8 @@ public class GameWorld extends GameEngine {
 
         // Create the scene
         setSceneNodes(new Group());
-        setGameSurface(new Scene(getSceneNodes(), 1200, 800));
+        setGameSurface(new Scene(getSceneNodes(), 1500, 900));
+        
 
         // Change the background of the main scene.
         getGameSurface().setFill(Color.BLACK);
@@ -90,11 +93,11 @@ public class GameWorld extends GameEngine {
         // Setup Game input
         setupInput(primaryStage);
         
-        
 
 
         getSpriteManager().addSprites(spaceShip);
         getSceneNodes().getChildren().add(0, spaceShip.getNode());
+        
         
         // Game over text
         VBox gameEvent = new VBox();
@@ -134,7 +137,10 @@ public class GameWorld extends GameEngine {
         getSceneNodes().getChildren().add(HUD);
         
         // load sound files
-        getSoundManager().loadSoundEffects("laser", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER));
+        getSoundManager().loadSoundEffects("laserL", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER_LARGE));
+        getSoundManager().loadSoundEffects("laserS", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER_SMALL));
+        getSoundManager().loadSoundEffects("laserM", getClass().getClassLoader().getResource(ResourcesManager.SOUND_LASER_MEDIUM));
+        getSoundManager().loadSoundEffects("explosion", getClass().getClassLoader().getResource(ResourcesManager.SOUND_EXPLOSION));
     }
     
     
@@ -159,7 +165,7 @@ public class GameWorld extends GameEngine {
                     Missile missile = spaceShip.fire(ResourcesManager.ROCKET_SMALL2, ResourcesManager.ROCKET_SMALL);
                     getSpriteManager().addSprites(missile);
                     // play sound
-                    getSoundManager().playSound("laser");
+                    getSoundManager().playSound("laserS");
 
                     getSceneNodes().getChildren().add(0, missile.getNode());
                     
@@ -168,7 +174,7 @@ public class GameWorld extends GameEngine {
                     getSpriteManager().addSprites(missile);
 
                     // play sound
-                    getSoundManager().playSound("laser");
+                    getSoundManager().playSound("laserM");
 
                     getSceneNodes().getChildren().add(0, missile.getNode());
                 }
@@ -177,21 +183,12 @@ public class GameWorld extends GameEngine {
                     getSpriteManager().addSprites(missile);
 
                     // play sound
-                    getSoundManager().playSound("laser");
+                    getSoundManager().playSound("laserL");
 
                     getSceneNodes().getChildren().add(0, missile.getNode());
-                }
-//                
+                }               
 
             } 
-//            else if (event.getButton() == MouseButton.SECONDARY) {
-//                // determine when all atoms are not on the game surface. Ship should be one sprite left.
-//
-//                // stop ship from moving forward
-//                spaceShip.applyTheBrakes(event.getX(), event.getY());
-//                // move forward and rotate ship
-//                spaceShip.plotCourse(event.getX(), event.getY(), true);
-//            }
         };
 
  
@@ -223,7 +220,7 @@ public class GameWorld extends GameEngine {
                     if (levelCounter == 1 || hitCounter == 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_SMALL);
-                        generateManySpheres(8);
+                        generateManySpheres(15);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -235,7 +232,7 @@ public class GameWorld extends GameEngine {
                     else if (levelCounter == 2 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_MEDIUM);
-                        generateManySpheres(10);
+                        generateManySpheres(20);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -245,7 +242,7 @@ public class GameWorld extends GameEngine {
                     else if (levelCounter == 3 && hitCounter < 3) {
                         hitCounter = 0;
                         spaceShip.changeShip(ResourcesManager.SPACE_SHIP_LARGE);
-                        generateManySpheres(12);
+                        generateManySpheres(25);
                         eventLabel.setText(" ");
                         subEventLabel.setText(" ");
                         lives.setText("Lives: " + Integer.toString(3 - hitCounter));
@@ -279,7 +276,7 @@ public class GameWorld extends GameEngine {
         Scene gameSurface = getGameSurface();
         for (int i = 0; i < numSpheres; i++) {
             
-            int randNum = ThreadLocalRandom.current().nextInt(1, 6);
+            int randNum = ThreadLocalRandom.current().nextInt(1, 7);
             Atom atom = new Atom(ResourcesManager.getInvaderSprites().get(randNum));
             
             ImageView atomImage = atom.getImageViewNode();
@@ -429,11 +426,11 @@ public class GameWorld extends GameEngine {
                         lives.setText("Lives: ");
                         eventLabel.setText("GAME OVER");
                         //TODO: on death, objects should clear
-//                        List removeList = (List) getSpriteManager().getAllSprites().stream().filter(Sprite -> (Sprite != spaceShip));
-//                        for (int i = 0; i < removeList.size(); i++) {
-//                            System.out.println(removeList.get(i));
-//                        }
-//                        getSpriteManager().getAllSprites().removeIf(Sprite -> (Sprite != spaceShip));
+                        List<Sprite> removeList = getSpriteManager().getAllSprites().stream().filter(Sprite -> (Sprite != spaceShip)).collect(Collectors.toList());
+                        for (int i = 0; i < removeList.size(); i++) {
+                            removeList.get(i).handleDeath(this);
+                       }
+                       getSpriteManager().getAllSprites().removeIf(Sprite -> (Sprite != spaceShip));
                         subEventLabel.setText("Press 'enter' to continue");
                         currentScore = 0;
                         hitCounter = 3;
@@ -446,13 +443,15 @@ public class GameWorld extends GameEngine {
                     return false;
                 }
                 //A missile or ship cannot be destroyed in the event of a collision
-                if (spriteA != spaceShip && !(spriteA instanceof Missile)) {
+                if (spriteA != spaceShip && !(spriteA instanceof Missile) && levelCounter != 0) {
                     spriteA.handleDeath(this);
+                    getSoundManager().playSound("explosion");
                     currentScore++;
                     score.setText("Score: " + currentScore);
                 }
-                if (spriteB != spaceShip && !(spriteB instanceof Missile)) {
+                if (spriteB != spaceShip && !(spriteB instanceof Missile) && levelCounter != 0) {
                     spriteB.handleDeath(this);
+                    getSoundManager().playSound("explosion");
                     score.setText("Score: " + currentScore);
                 }
             }
@@ -462,12 +461,13 @@ public class GameWorld extends GameEngine {
             eventLabel.setText("SPACE INVADERS");
             subEventLabel.setText("Press 'enter' to continue");
         }
-        if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter > 0) {
+        if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter > 0 && levelCounter < 4) {
             eventLabel.setText("LEVEL " + levelCounter + " COMPLETE");
             subEventLabel.setText("Press 'enter' to continue");
         }
         if (getSpriteManager().getAllSprites().size() == 1 && hitCounter < 3 && levelCounter == 3) {
-            levelCounter = 0;
+            eventLabel.setText("GAME COMPLETE");
+            subEventLabel.setText("Congratulations please exit");
         }
         return false;
     }
