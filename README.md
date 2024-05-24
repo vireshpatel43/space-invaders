@@ -1,3 +1,4 @@
 # space-invaders
 
-A JavaFX game similar to space invaders. Must fix and add features to the code provided. 
+A JavaFX space invaders game. Was given source code that was unfinished and contained bugs. 
+Fixed ship movement and collision detection, and added custom vectors to game. 
